@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #030a14;
+  --color-bg-secondary: #07111f;
+  --color-panel: #0b1728;
+  --color-panel-light: #0e1d32;
+  --color-line-dark: #18304f;
+  --color-brand-cyan: #4dd8ff;
+  --color-brand-cyan-dim: rgba(77, 216, 255, 0.15);
+  --color-brand-lime: #c8f04a;
+  --color-brand-lime-dim: rgba(200, 240, 74, 0.15);
+  --color-brand-blue: #69c6ff;
+  --color-brand-danger: #ff6b6b;
+  --color-brand-warning: #ffd166;
+  --color-text-main: #eaf3ff;
+  --color-text-muted: #91a7c4;
+}
+
+:root {
+  background-color: #030a14;
+  color: #eaf3ff;
+  font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(77,216,255,0.06), transparent 25%),
+    radial-gradient(circle at bottom right, rgba(200,240,74,0.04), transparent 25%),
+    linear-gradient(180deg, #030a14 0%, #07111f 100%);
+  min-height: 100vh;
+}
+
+/* Custom glow borders and shadows */
+.glow-border-cyan {
+  border: 1px solid rgba(77, 216, 255, 0.2);
+  box-shadow: 0 0 12px rgba(77, 216, 255, 0.05), inset 0 0 8px rgba(77, 216, 255, 0.03);
+}
+
+.glow-border-lime {
+  border: 1px solid rgba(200, 240, 74, 0.2);
+  box-shadow: 0 0 12px rgba(200, 240, 74, 0.05), inset 0 0 8px rgba(200, 240, 74, 0.03);
+}
+
+.glow-border-subtle {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Rounded range inputs */
+input[type="range"] {
+  appearance: none;
+  border-radius: 999px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+  border: 3px solid currentColor;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "라인 팔로잉 학습",
+  "description": "반사값과 기준값을 직접 조절하며 배우는 인터랙티브 라인 팔로잉 시뮬레이션 학습 도구입니다.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
