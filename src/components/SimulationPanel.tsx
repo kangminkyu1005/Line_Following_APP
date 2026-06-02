@@ -29,18 +29,6 @@ export default function SimulationPanel({ state, onStateChange, onPresetAction }
   const diff = currentReflection - targetReflection;
   const isOptimal = Math.abs(diff) <= 3;
 
-  // Determine state logic matching ControlPanel
-  let stateTitle = '경계선 근처';
-  let stateDesc = '센서가 로봇이 추적하고자 하는 최적의 경계선(기준값)에 인접해 있습니다.';
-  
-  if (diff < -3) {
-    stateTitle = '검정 쪽 치우침';
-    stateDesc = '센서가 선 안쪽 어두운 검정색 영역에 너무 많이 밀려들어 갔습니다.';
-  } else if (diff > 3) {
-    stateTitle = '흰색 쪽 치우침';
-    stateDesc = '센서가 경계선을 벗어나 바깥쪽 밝은 흰색 바닥 영역으로 빠져나갔습니다.';
-  }
-
   // Cosmetic state for robot jitter (vibration) matching isPlaying
   const [jitter, setJitter] = useState({ x: 0, y: 0 });
 
@@ -115,52 +103,27 @@ export default function SimulationPanel({ state, onStateChange, onPresetAction }
           </span>
         </div>
 
-        {/* Steering Correction Guidance Arrow */}
-        <div className="absolute right-[4%] sm:right-[12%] top-[24%] sm:top-[20%] flex flex-col items-center select-none z-10 transition-all duration-300">
-          <div className="text-[8px] sm:text-[10px] font-bold text-[#c8f04a] bg-black/80 px-2 py-0.5 rounded border border-brand-lime/30 shadow-md whitespace-nowrap">
-            보정 방향
-          </div>
-          
-          {isOptimal ? (
-            <div className="flex flex-col items-center mt-1.5">
-              <span className="text-[20px] sm:text-[28px] font-black text-brand-blue drop-shadow-md leading-none animate-pulse">
-                ↑
-              </span>
-              <span className="text-[8px] sm:text-[10px] font-extrabold text-brand-blue bg-black/85 px-1.5 py-0.5 rounded mt-1 whitespace-nowrap">
-                유지 / 직진
-              </span>
-            </div>
-          ) : diff < 0 ? (
-            <div className="flex flex-col items-center mt-1">
-              <span className="text-[32px] sm:text-[44px] font-black text-[#c8f04a] drop-shadow-[0_2px_8px_rgba(200,240,74,0.6)] leading-none">
-                →
-              </span>
-              <span className="text-[8px] sm:text-[10px] font-extrabold text-[#c8f04a] bg-black/85 px-1.5 py-0.5 rounded mt-1 whitespace-nowrap">
-                흰색 쪽으로 보정
-              </span>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center mt-1">
-              <span className="text-[32px] sm:text-[44px] font-black text-brand-cyan drop-shadow-[0_2px_8px_rgba(77,216,255,0.6)] leading-none">
-                ←
-              </span>
-              <span className="text-[8px] sm:text-[10px] font-extrabold text-brand-cyan bg-black/85 px-1.5 py-0.5 rounded mt-1 whitespace-nowrap">
-                검정색 쪽으로 보정
-              </span>
-            </div>
-          )}
-        </div>
-
         {/* Threshold target line on track border */}
         <motion.div 
           className="absolute top-0 bottom-0 w-0 border-l-[3px] border-dashed border-[#c8f04a]/75 drop-shadow-[0_0_4px_#c8f04a] z-10"
           animate={{ left: `${targetLineOffset}%` }}
           transition={{ type: 'spring', stiffness: 90, damping: 16 }}
         >
-          {/* Target Boundary tag */}
-          <div className="absolute top-[35%] transform translate-x-1 sm:translate-x-3 bg-brand-lime-dim/95 text-[#6c8612] border border-brand-lime/45 rounded-lg p-1.5 sm:p-2 text-[8px] sm:text-[10px] font-black leading-tight backdrop-blur shadow-md shadow-black/10 select-none whitespace-nowrap">
-            <span className="text-bg-primary font-bold block mb-0.5 border-b border-[#6c8612]/30 pb-0.5 text-center">목표 경계선</span>
-            기준값 ({targetReflection}) 위치
+          {/* Target Boundary tag sitting straight on top of the green line like a map pin, pointing down */}
+          <div className="absolute top-[18%] transform -translate-x-1/2 bg-slate-950/95 text-[#c8f04a] border border-[#c8f04a]/45 rounded-xl p-2 sm:p-2.5 text-[9px] sm:text-[11px] font-black leading-tight backdrop-blur shadow-xl shadow-black/45 select-none whitespace-nowrap z-25">
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-1.5 pb-0.5 border-b border-[#c8f04a]/20 w-full justify-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#c8f04a] animate-pulse" />
+                <span>목표 경계선</span>
+              </div>
+              <span className="text-[8px] sm:text-[10px] text-slate-400 font-bold block mt-1">
+                기준값 ({targetReflection}) 위치
+              </span>
+              
+              {/* Minimal Speech bubble indicator triangle */}
+              <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-slate-950 absolute -bottom-[5px] left-1/2 -translate-x-1/2" />
+              <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#c8f04a]/45 absolute -bottom-[6px] left-1/2 -translate-x-1/2 -z-10" />
+            </div>
           </div>
         </motion.div>
 
@@ -214,130 +177,47 @@ export default function SimulationPanel({ state, onStateChange, onPresetAction }
               </div>
             </div>
           </div>
+
+          {/* Compact Correction Direction box positioned dynamically on the left or right side of the robot chassis so it never clips or overflows the screen */}
+          {(() => {
+            // robotLeftOffset is between 44% and 80%. If it's on the right half (> 54%), place the box on the left of the robot. Otherwise, on the right.
+            const isBoxOnRight = robotLeftOffset <= 54;
+            const boxSideClass = isBoxOnRight ? 'left-[59px]' : 'right-[59px]';
+            return (
+              <div className={`absolute ${boxSideClass} top-[14px] select-none z-30 transition-all duration-300`}>
+                {isOptimal ? (
+                  <div className="flex flex-col items-center justify-center bg-[#070f1a]/95 border border-brand-blue/30 rounded-xl p-1.5 shadow-2xl shadow-black/60 backdrop-blur-sm w-[94px]">
+                    <div className="text-[9px] font-black text-brand-blue flex items-center gap-1 leading-none">
+                      <span className="w-1 h-1 rounded-full bg-brand-blue animate-ping" />
+                      <span>보정: 유지</span>
+                    </div>
+                    <span className="text-lg font-black text-brand-blue leading-none mt-1 animate-pulse">↑</span>
+                    <span className="text-[7.5px] text-slate-400 font-extrabold mt-0.5 leading-none">직진 유지</span>
+                  </div>
+                ) : diff < 0 ? (
+                  <div className="flex flex-col items-center justify-center bg-[#070f1a]/95 border border-brand-lime/30 rounded-xl p-1.5 shadow-2xl shadow-black/60 backdrop-blur-sm w-[94px]">
+                    <div className="text-[9px] font-black text-[#c8f04a] flex items-center gap-1 leading-none">
+                      <span className="w-1 h-1 rounded-full bg-[#c8f04a] animate-pulse" />
+                      <span>보정: 우회전</span>
+                    </div>
+                    <span className="text-xl font-black text-[#c8f04a] leading-none mt-0.5">→</span>
+                    <span className="text-[7.5px] text-slate-400 font-extrabold mt-0.5 leading-none">흰색 쪽으로 보정</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center bg-[#070f1a]/95 border border-brand-cyan/40 rounded-xl p-1.5 shadow-2xl shadow-black/60 backdrop-blur-sm w-[94px]">
+                    <div className="text-[9px] font-black text-brand-cyan flex items-center gap-1 leading-none">
+                      <span className="w-1 h-1 rounded-full bg-brand-cyan animate-pulse" />
+                      <span>보정: 좌회전</span>
+                    </div>
+                    <span className="text-xl font-black text-brand-cyan leading-none mt-0.5">←</span>
+                    <span className="text-[7.5px] text-slate-400 font-extrabold mt-0.5 leading-none">검정색 쪽으로 보정</span>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </motion.div>
 
-      </div>
-
-      {/* 별도로 분리 표시되는 실시간 상태 및 반사값 범례 통합 보드 */}
-      <div className="bg-[#0b172a] border border-[#1e293b] rounded-xl p-4 flex flex-col gap-3.5 select-none text-xs">
-        {/* Top Header Row with Title */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
-          <span className="font-extrabold text-slate-300 text-[12px] flex items-center gap-1.5">
-            <span className="w-1.5 h-3 bg-brand-cyan rounded-full" />
-            현재 판단 상태 및 반사값 범례
-          </span>
-        </div>
-
-        {/* 4 Metrics columns from the attached image */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {/* 1. 반사값 */}
-          <div className="bg-[#070f1a] border border-[#1e293b] rounded-lg p-2.5 flex flex-col items-center justify-center">
-            <span className="text-[10px] text-slate-400 font-bold mb-0.5">반사값</span>
-            <span className="text-base sm:text-lg font-black text-brand-cyan">{currentReflection}</span>
-          </div>
-
-          {/* 2. 기준값 */}
-          <div className="bg-[#070f1a] border border-[#1e293b] rounded-lg p-2.5 flex flex-col items-center justify-center">
-            <span className="text-[10px] text-slate-400 font-bold mb-0.5">기준값</span>
-            <span className="text-base sm:text-lg font-black text-brand-lime">{targetReflection}</span>
-          </div>
-
-          {/* 3. 차이 */}
-          <div className="bg-[#070f1a] border border-[#1e293b] rounded-lg p-2.5 flex flex-col items-center justify-center">
-            <span className="text-[10px] text-slate-400 font-bold mb-0.5">차이</span>
-            <span className={`text-base sm:text-lg font-black ${diff === 0 ? 'text-slate-300' : diff < 0 ? 'text-brand-cyan' : 'text-brand-warning'}`}>
-              {diff > 0 ? `+${diff}` : diff}
-            </span>
-          </div>
-
-          {/* 4. 방향 */}
-          <div className="bg-[#070f1a] border border-[#1e293b] rounded-lg p-2.5 flex flex-col items-center justify-center">
-            <span className="text-[10px] text-slate-400 font-bold mb-0.5">방향</span>
-            <span className={`text-xs sm:text-sm font-black ${isOptimal ? 'text-brand-warning' : diff < 0 ? 'text-brand-cyan' : 'text-[#c8f04a]'}`}>
-              {isOptimal ? '경계선 유지' : diff < 0 ? '검정 쪽' : '흰색 쪽'}
-            </span>
-          </div>
-        </div>
-
-        {/* Dynamic status helper text banner as requested from image info */}
-        <div className="bg-[#070f1a]/85 border border-brand-cyan/10 rounded-lg p-3">
-          <div className="flex items-start gap-2">
-            <span className={`w-2 h-2 rounded-full mt-1 shrink-0 ${isOptimal ? 'bg-brand-warning animate-pulse' : diff < 0 ? 'bg-brand-cyan animate-pulse' : 'bg-[#c8f04a] animate-pulse'}`} />
-            <div>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className={`text-[12px] font-black ${isOptimal ? 'text-brand-warning' : diff < 0 ? 'text-brand-cyan' : 'text-[#c8f04a]'}`}>
-                  {stateTitle}
-                </span>
-              </div>
-              <p className="text-[10px] sm:text-[11px] leading-relaxed font-semibold text-slate-300 mt-0.5">
-                {stateDesc}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* 6 Preset change keys in bottom card as requested in image reference */}
-        <div className="grid grid-cols-3 gap-2 pt-1">
-          <button
-            onClick={() => onPresetAction('inside-black')}
-            className="py-2 px-1.5 text-center text-xs font-bold text-slate-200 hover:text-brand-cyan bg-[#070f1a]/60 border border-[#1e293b] hover:border-brand-cyan/45 hover:bg-brand-cyan/5 rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center min-h-[48px]"
-          >
-            <span className="font-extrabold text-[11px] sm:text-[12px]">검정선 안쪽</span>
-            <span className="text-[8.5px] text-slate-500 font-normal mt-0.5">현재 = 기준 - 10</span>
-          </button>
-
-          <button
-            onClick={() => onPresetAction('near-boundary')}
-            className="py-2 px-1.5 text-center text-xs font-bold text-slate-200 hover:text-brand-lime bg-[#070f1a]/60 border border-[#1e293b] hover:border-brand-lime/45 hover:bg-brand-lime/5 rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center min-h-[48px]"
-          >
-            <span className="font-extrabold text-[11px] sm:text-[12px]">경계선 근처</span>
-            <span className="text-[8.5px] text-slate-500 font-normal mt-0.5">현재 = 기준값</span>
-          </button>
-
-          <button
-            onClick={() => onPresetAction('white-side')}
-            className="py-2 px-1.5 text-center text-xs font-bold text-slate-200 hover:text-brand-blue bg-[#070f1a]/60 border border-[#1e293b] hover:border-brand-blue/45 hover:bg-brand-blue/5 rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center min-h-[48px]"
-          >
-            <span className="font-extrabold text-[11px] sm:text-[12px]">흰색 쪽</span>
-            <span className="text-[8.5px] text-slate-500 font-normal mt-0.5">현재 = 기준 + 10</span>
-          </button>
-
-          <button
-            onClick={() => onPresetAction('lower-target')}
-            className="py-2 px-1 text-center text-xs font-bold text-slate-200 hover:text-brand-lime bg-[#070f1a]/60 border border-[#1e293b] hover:border-brand-lime/40 rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center min-h-[48px]"
-          >
-            <span className="font-extrabold text-[11px] sm:text-[12px]">기준값 낮추기</span>
-            <span className="text-[9px] text-[#c8f04a] font-extrabold mt-0.5">-5</span>
-          </button>
-
-          <button
-            onClick={() => onPresetAction('raise-target')}
-            className="py-2 px-1 text-center text-xs font-bold text-slate-200 hover:text-brand-lime bg-[#070f1a]/60 border border-[#1e293b] hover:border-brand-lime/40 rounded-xl cursor-pointer transition-all duration-200 flex flex-col items-center justify-center min-h-[48px]"
-          >
-            <span className="font-extrabold text-[11px] sm:text-[12px]">기준값 높이기</span>
-            <span className="text-[9px] text-[#c8f04a] font-extrabold mt-0.5">+5</span>
-          </button>
-
-          <button
-            onClick={() => onPresetAction('reset')}
-            className="py-2 px-1 text-center text-xs font-bold text-[#f87171] bg-red-950/20 hover:bg-red-950/35 border border-red-900/40 hover:border-red-500/50 rounded-xl cursor-pointer transition-all duration-200 flex items-center justify-center gap-1.5 min-h-[48px]"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span className="font-extrabold text-[11px] sm:text-[12px]">초기화</span>
-          </button>
-        </div>
-
-        {/* Legend bar strip at the bottom */}
-        <div className="border-t border-[#1e293b]/50 pt-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5">
-          <div className="flex items-center gap-2 select-none">
-            <span className="font-bold text-slate-400 text-[10px]">반사값 범례</span>
-          </div>
-          <div className="flex items-center gap-2.5 w-full sm:w-auto flex-1 sm:max-w-md">
-            <span className="text-[10px] text-slate-400 font-extrabold whitespace-nowrap">0 ≈ 검정 (완전 흡수)</span>
-            <div className="h-2 flex-1 rounded-full bg-gradient-to-r from-black via-slate-600 to-white border border-white/5 shadow-inner" />
-            <span className="text-[10px] text-slate-400 font-extrabold whitespace-nowrap">100 ≈ 흰색 (완전 반사)</span>
-          </div>
-        </div>
       </div>
 
     </div>

@@ -92,17 +92,17 @@ export default function App() {
             <div className="flex flex-col gap-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
-                {/* Left Controller inputs */}
-                <ControlPanel 
-                  state={state} 
-                  onStateChange={handleStateChange} 
-                />
-
-                {/* Right Interactive Simulator */}
+                {/* Left Interactive Simulator (Moved to the left as requested) */}
                 <SimulationPanel 
                   state={state} 
                   onStateChange={handleStateChange} 
                   onPresetAction={handlePresetAction}
+                />
+
+                {/* Right Controller inputs (Moved to the right) */}
+                <ControlPanel 
+                  state={state} 
+                  onStateChange={handleStateChange} 
                 />
 
               </div>
